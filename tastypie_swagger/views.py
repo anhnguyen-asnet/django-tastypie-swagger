@@ -109,7 +109,7 @@ class ResourcesView(TastypieApiMixin, SwaggerApiDataMixin, JSONView):
         # Construct schema endpoints from resources
         apis = [{'path': '/%s' % name} for name in sorted(self.tastypie_api._registry.keys())]
         context.update({
-            'basePath': self.request.build_absolute_uri(reverse('%s:schema' % self.kwargs.get('namespace'))).rstrip('/'),
+            'basePath': 'https://' + self.request.get_host() + reverse('%s:schema' % self.kwargs.get('namespace')).rstrip('/'),
             'apis': apis,
         })
         return context
@@ -134,7 +134,7 @@ class SchemaView(TastypieApiMixin, SwaggerApiDataMixin, JSONView):
 
         context = super(SchemaView, self).get_context_data(*args, **kwargs)
         context.update({
-            'basePath': '/',
+            'basePath': 'https://' + self.request.get_host(), # Fix basePath to work with HTTPS
             'apis': mapping.build_apis(),
             'models': mapping.build_models(),
             'resourcePath': '/{0}'.format(resource._meta.resource_name)
